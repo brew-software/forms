@@ -1,5 +1,5 @@
 import asFormikField, { AsFormikField } from "./asField";
-import { PasswordFieldProps, PasswordField } from "../inputs";
+import { PasswordFieldProps, PasswordField } from "../fields";
 
 const PasswordFormField: AsFormikField<PasswordFieldProps> = ({
   form,
