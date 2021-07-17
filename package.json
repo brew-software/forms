@@ -4,7 +4,6 @@
   "description": "React form helpers for brew apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "private": true,
   "dependencies": {
     "@brew-software/react-icons": "^1.5.1",
     "@material-ui/core": "^4.12.1",
