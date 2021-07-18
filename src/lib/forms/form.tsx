@@ -1,10 +1,12 @@
 import {
   FieldMetaProps,
   FormikConfig,
+  FormikHelpers,
   FormikProps,
   FormikProvider,
   useFormik,
 } from "formik";
+import { useCallback } from "react";
 import {
   createContext,
   CSSProperties,
@@ -14,11 +16,17 @@ import {
   useState,
 } from "react";
 import { lazy, object, ObjectSchema } from "yup";
+import { FormErrors } from "./form-errors";
+
+type OnSubmitResult<T> = undefined | true | FormErrors<T>;
 
 type FormProps<Values extends {}> = Omit<
   FormikConfig<Values>,
-  "validationSchema" | "children"
+  "validationSchema" | "children" | "onSubmit"
 > & {
+  onSubmit: (
+    values: Values
+  ) => OnSubmitResult<Values> | Promise<OnSubmitResult<Values>>;
   className?: string;
   style?: CSSProperties;
   validationSchema?: ObjectSchema<Values>;
@@ -64,6 +72,7 @@ export function Form<Values extends {}>({
   className,
   style,
   validationSchema: baseSchema,
+  onSubmit,
   ...props
 }: FormProps<Values>) {
   const [schemaDefinitions, setSchemaDefinitions] = useState<
@@ -82,8 +91,20 @@ export function Form<Values extends {}>({
     }, object().shape({}));
   }, [schemaDefinitions]);
 
+  const handleSubmit = useCallback(
+    async (values: Values, helpers: FormikHelpers<Values>) => {
+      const result = await Promise.resolve(onSubmit(values));
+
+      if (result !== true && result !== undefined) {
+        helpers.setErrors(result);
+      }
+    },
+    []
+  );
+
   const formik = useFormik({
     ...props,
+    onSubmit: handleSubmit,
     validationSchema: lazy(() => validationSchema),
   });
 
