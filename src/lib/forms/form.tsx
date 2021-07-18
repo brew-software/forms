@@ -18,7 +18,7 @@ import {
 import { lazy, object, ObjectSchema } from "yup";
 import { FormErrors } from "./form-errors";
 
-type OnSubmitResult<T> = undefined | true | FormErrors<T>;
+type OnSubmitResult<T> = void | FormErrors<T>;
 
 type FormProps<Values extends {}> = Omit<
   FormikConfig<Values>,
@@ -95,7 +95,7 @@ export function Form<Values extends {}>({
     async (values: Values, helpers: FormikHelpers<Values>) => {
       const result = await Promise.resolve(onSubmit(values));
 
-      if (result !== true && result !== undefined) {
+      if (result) {
         helpers.setErrors(result);
       }
     },
